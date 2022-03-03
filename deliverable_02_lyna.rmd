@@ -1,0 +1,154 @@
+---
+title: "Group 1 - Deliverable 02"
+author: "Lyna Bentahar"
+date: "3/2/2022"
+output: html_notebook
+---
+
+The paragraphs we'll be reverse engineering are:
+
+As Baltimore has seen a stunning surge of violence, with nearly a killing each day for the past three years in a city of 600,000, homicide arrests have plummeted. City police made an arrest in 41 percent of homicides in 2014; last year, the rate was just 27 percent, a 14 percentage point drop.
+
+-
+
+Community leaders and residents say that leaves hundreds of families who have been robbed of a loved one without a chance at seeing justice done. Of the 1,002 homicides between 2015 and the beginning of this year, just 252 — one out of every four — resulted in an arrest.
+
+First, we just set up all the libraries we need, and then created a dataframe for Washington Post's homicide data.
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Turn off scientific notation
+options(scipen=999)
+library(tidyverse)
+library(janitor)
+library(lubridate)
+
+```
+
+```{r}
+library(readr)
+homicide_data <- read_csv("homicide-data.csv")
+
+```
+
+We didn't like how the way the dates were formatted, so we just changed it to year-month-date.
+```{r}
+homicide_data$reported_date <- ymd(homicide_data$reported_date)
+  
+```
+
+We don't care about other cities in this paragraph, so we're just going to create a new dataframe that only includes homicides in Baltimore.
+```{r}
+homicide_data_baltimore <- homicide_data %>% 
+  filter(city == "Baltimore")
+
+```
+
+With a quick glance of the dateframe, we know that the range of dates extends between 2007/01/01 and 2017/12/31. So, the sentence describing a killing every day for the past 3 years includes the years 2015, 2016 and 2017. So, to see the average number of killings per day, we're going to count how many homicides were recorded in those three years.
+```{r}
+homicide_data_baltimore %>% 
+  filter(reported_date >= as.Date("2015-01-01") & reported_date <= as.Date("2017-12-31")) %>% 
+  summarize(
+    threeyr_homicide_amount = n(),
+    homicides_per_day = threeyr_homicide_amount / (365*3)
+  ) 
+  
+```
+The homicide_per_day is 0.915, which corresponds to The Washington Post's analysis that there about one killing every day for the past 3 years.
+
+Now, to find the percentage of arrests police made in 2014, we will create a dataset that just includes data from the year 2014.
+```{r}
+homicide_2014data <- homicide_data_baltimore %>% 
+  filter(reported_date >= as.Date("2014-01-01") & reported_date <= as.Date("2014-12-31"))
+
+```
+
+We can then summarize the data to createa dataset that counts how many cases are listed as 'Closed by arrest,' 'Closed without arrest,' and 'Open/No arrest.'
+```{r}
+homicide_2014data_disposition <- homicide_2014data %>% 
+  group_by(disposition) %>% 
+  summarize(
+    disposition_breakdown = n(),
+  )
+
+```
+
+Then, we can just see the percentages of cases with each disposition.
+```{r}
+homicide_2014data_disposition %>% 
+  group_by(disposition) %>% 
+  summarize(
+    percent_cases = disposition_breakdown / sum(homicide_2014data_disposition$disposition_breakdown) * 100
+  )
+  
+```
+
+We see here that the percent of cases that were closed by arrest is 40.758%, which can be rounded up to 41%, as The Washington Post described.
+
+Finally, we want to see 'last year's' arrest rate. The article was written in 2018 and refers to the year 2017. So just as we did with the 2014 data, we will narrow our homicide_data_baltimore dataset to just the year 2017.
+```{r}
+homicide_2017data <- homicide_data_baltimore %>% 
+  filter(reported_date >= as.Date("2017-01-01") & reported_date <= as.Date("2017-12-31"))
+
+```
+
+We will again break the data down to count how many cases are listed under each disposition.
+```{r}
+homicide_2017data_disposition <- homicide_2017data %>% 
+  group_by(disposition) %>% 
+  summarize(
+    disposition_breakdown = n()
+  )
+
+```
+
+And then again find the percentage of cases.
+```{r}
+homicide_2017data_disposition %>% 
+  group_by(disposition) %>% 
+  summarize(
+    percent_cases = disposition_breakdown / sum(homicide_2017data_disposition$disposition_breakdown) * 100
+  )
+```
+In 2017, we see that 27.353% of cases were closed by arrest, which can be rounded down to 27%, as The Washington Post described.
+
+We'll be running the same process for the second paragraph, which describes cases between 2015 and the end of 2017.
+```{r}
+homicide_3yrdata <- homicide_data_baltimore %>% 
+  filter(reported_date >= as.Date("2015-01-01") & reported_date <= as.Date("2017-12-31"))
+```
+
+We can see that there are 1002 rows, or 1002 cases of homicide, but we can go ahead and confirm that with a simple summarize function.
+```{r}
+homicide_3yrdata %>% 
+  summarize(
+    cases_amount = n()
+  )
+  
+```
+
+Of those cases, we'll see how many ended in arrest by breaking down the data to see how many cases were assigned each of the three dispositions.
+```{r}
+homicide_3yrdata_disposition <- homicide_3yrdata %>% 
+  group_by(disposition) %>% 
+  summarize(
+    disposition_breakdown = n()
+  )
+
+homicide_3yrdata_disposition
+
+```
+As The Washington Post describes, we can see that 252 cases were closed by arrest.
+
+And to know the percentage of cases, we do the same as with the 2014 and 2017 data.
+```{r}
+homicide_3yrdata_disposition %>% 
+  group_by(disposition) %>% 
+  summarize(
+    percent_cases = disposition_breakdown / sum(homicide_3yrdata_disposition$disposition_breakdown) * 100
+  )
+```
+We can see here that 25.15% of cases were closed by arrest. Rounding down, that's 25% of cases, or 1 out of 4, as The Washington Post describes.
+
