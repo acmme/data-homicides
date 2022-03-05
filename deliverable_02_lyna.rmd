@@ -13,6 +13,10 @@ As Baltimore has seen a stunning surge of violence, with nearly a killing each d
 
 Community leaders and residents say that leaves hundreds of families who have been robbed of a loved one without a chance at seeing justice done. Of the 1,002 homicides between 2015 and the beginning of this year, just 252 — one out of every four — resulted in an arrest.
 
+-
+
+Of 50 of the nation’s largest cities, Baltimore is one of 34 where police now make homicide arrests less often than in 2014, according to a Washington Post analysis. In Chicago, the homicide arrest rate has dropped 21 percentage points, in Boston it has dropped 12 points and in St. Louis it is down 9.
+
 First, we just set up all the libraries we need, and then created a dataframe for Washington Post's homicide data.
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -151,4 +155,67 @@ homicide_3yrdata_disposition %>%
   )
 ```
 We can see here that 25.15% of cases were closed by arrest. Rounding down, that's 25% of cases, or 1 out of 4, as The Washington Post describes.
+
+In the third paragraph, we know that the data is made up of arrest data from the 50 largest cities in the U.S. Knowing this, we're going to take the original data and compare the 2014 arrest rates of each city with the 2017 arrest rates of each city.
+
+To make things easier on us, we're going to create a column that just lists the year of the reported date.
+```{r}
+homicide_data <- homicide_data %>% 
+  mutate(year = year(reported_date))
+```
+
+Then, we're going to filter our data to just the years 2014 and 2017, because we're just comparing the difference in percentage between the two years. Further narrowing our data, we only comparing the city and disposition between these years, so we're going to create two new columns: One that will show the amount of cases per each disposition per city per year, and one that will show the total amount of cases per city per year. We'll take a ratio of these two numbers to know the percentage of cases. After that, since we don't care about the ratio of 'Closed without arrest' or the ratio between 'Open/No arrest' and the total number of cases, we're going to filter the data so that it only shows the percent of cases per the 'Closed by arrest' disposition.
+```{r}
+homicide_arrests_per_city_per_year <- homicide_data %>% 
+  filter(year == "2014" | year == "2017") %>% 
+  group_by(city, year, disposition) %>% 
+  mutate(
+    amount_of_cases_per_disposition = n()
+  ) %>% 
+  group_by(city, year) %>% 
+  mutate(
+    amount_of_cases = n(),
+    percent_of_cases_per_disposition = amount_of_cases_per_disposition / amount_of_cases * 100
+  ) %>% 
+  filter(disposition == "Closed by arrest")
+  
+```
+
+Now, we don't care about any of the columns except for city, year, and percent_of_cases_per_disposition, so we're going to create a new dataset that just selects these three columns. There's a lot of duplicate data here, so we're going to use the distinct() function to simplify our dataset.
+```{r}
+delta_homicide_arrests_per_city_per_year <- homicide_arrests_per_city_per_year %>% 
+  select(city, year, percent_of_cases_per_disposition) %>% 
+  distinct()
+
+```
+
+
+With this clean date, we're going to find the percentage change between 2014 and 2017 by simply subtracting each row by the previous row for each city using the lag() function.
+```{r}
+delta_homicide_arrests_per_city_per_year <- delta_homicide_arrests_per_city_per_year %>% 
+  group_by(city) %>% 
+  arrange(city, year, .by_group = TRUE) %>%
+  mutate(delta = percent_of_cases_per_disposition - lag(percent_of_cases_per_disposition))
+
+view(delta_homicide_arrests_per_city_per_year)
+
+```
+With this, we can see the percentage change for each city mentioned in the article: Chicago, Boston and St. Louis. In Chicago, our data shows a drop by 21.34 percentage points. Rounding down, this is a drop in 21 percentage points, as The Washington Post Described. In Boston, our data shows a drop by 11.98 percentage points, which can be rounded up to a drop by 12 percentage points, as The Washington Post described. In St. Louis, our data shows a drop by 8.94 percentage points, which can be rounded up to a drop by 9 percentage points, as The Washington Post described.
+
+Finally, we can see that Baltimore has a drop in percentage, but we want to know how many cities it shares that distinction. So, we'll use the case_when() function to see how many cities have seen a drop in percentage.
+```{r}
+delta_homicide_arrests_per_city_per_year %>% 
+  mutate(
+    cities_with_negative_change = case_when(
+      delta < 0 ~ 'negative cases',
+      delta > 0 ~ 'positive cases'
+    )
+  ) %>% 
+  group_by(cities_with_negative_change) %>% 
+  summarize(
+    count = n()
+  )
+
+```
+Here, I was only able to find 32 cases of a drop in percentage points since 2014. Some data for some cities do not include data, either for 2014 or 2017. It's possible that The Washington Post went about those cities with missing 2014 and 2017 data differently, since the article doesn't define what it means by "now."
 
