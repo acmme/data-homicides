@@ -1,0 +1,144 @@
+---
+title: "Data Analysis Project"
+output: html_notebook
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Will be looking at statistics from this paragrapph "For most of the decade before 2015, Baltimore’s annual homicide arrest rate hovered at about 40 percent. Since 2015, the arrest rate hasn’t topped 30 percent in any year. And while most cities saw their arrest rates drop gradually, Baltimore’s decline was sudden — plummeting 15 percentage points in 2015, after Gray’s death, the largest single-year drop for any city already solving less than half its homicides." 
+
+
+
+```{r}
+# Turn off scientific notation
+options(scipen=999)
+
+# Load the tidyverse.
+library(tidyverse)
+```
+
+
+## read in the file from github 
+
+```{r}
+library(readr)
+
+urlfile="https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv"
+
+homicide_data <- read_csv(url(urlfile))
+
+```
+
+##filter the file to only inlcude data from Baltimore
+
+##then filter that data to only look at crimes reported before 2015
+
+```{r}
+baltimore_homicide_data <- homicide_data %>% 
+  filter(city == "Baltimore")
+
+early_baltimore_homicide_data <- baltimore_homicide_data %>% 
+  filter(reported_date < 20150103)
+```
+
+"
+## find arress rate from "most of tghe decade before 2015" to be 40%
+
+```{r}
+successful_arrests <- early_baltimore_homicide_data %>% 
+  filter(str_detect(disposition ,'by arrest'))
+
+
+
+
+
+```
+
+
+## We find from the 1,825 cases in  Baltimore before 2015, that 750 were closed by arrest. This means that before 2015, roughly 41% of cases ended in an arrest which checks out with the "For most of the decade before 2015, Baltimore’s annual homicide arrest rate hovered at about 40 percent" sentence.
+
+
+##next I will code to find the findings of the next sentence, "Since 2015, the arrest rate hasn’t topped 30 percent in any year."
+
+##filter to find arrest rate in each year, starting with 2015
+
+```{r}
+baltimore_homicide_data <- homicide_data %>% 
+  filter(city == "Baltimore")
+fifteen_baltimore_homicide_data <- baltimore_homicide_data %>% 
+  filter(reported_date < 20159999) %>% 
+  filter(reported_date > 20149999  )
+
+##this code above gives me only cases from 2015
+
+fifteen_successful_arrests <- fifteen_baltimore_homicide_data %>% 
+  filter(str_detect(disposition ,'by arrest')) 
+
+  
+```
+
+##code above shows us that there are only 87 rows in the data (arrests) out of 342 rows (arrests) in  our other datafrome. This gives us a pervcentage of 25.4 (87/342), which is well bellow 30%. I will repeat the code for 2016 and 2017 as well. 
+
+
+```{r}
+baltimore_homicide_data <- homicide_data %>% 
+  filter(city == "Baltimore")
+sixteen_baltimore_homicide_data <- baltimore_homicide_data %>% 
+  filter(reported_date < 20169999) %>% 
+  filter(reported_date > 20159999  )
+
+##this code above gives me only cases from 2016
+
+sixteen_successful_arrests <- sixteen_baltimore_homicide_data %>% 
+  filter(str_detect(disposition ,'by arrest')) 
+
+
+sixteen_successful_arrests
+```
+
+##code above shows us that there are only 72 rows in the data (arrests) out of 320 rows (arrests) in  our other datafrome. This gives us a pervcentage of 22.5 (72/320), which is well bellow 30%. I will repeat for 2017. 
+
+```{r}
+baltimore_homicide_data <- homicide_data %>% 
+  filter(city == "Baltimore")
+seventeen_baltimore_homicide_data <- baltimore_homicide_data %>% 
+  filter(reported_date < 20179999) %>% 
+  filter(reported_date > 20169999  )
+
+##this code above gives me only cases from 2017
+
+seventeen_successful_arrests <- seventeen_baltimore_homicide_data %>% 
+  filter(str_detect(disposition ,'by arrest')) 
+
+
+seventeen_successful_arrests
+```
+
+##code above shows us that there are only 93 rows in the data (arrests) out of 340 rows (arrests) in  our other datafrome. This gives us a pervcentage of 27.35 (93/340), which is well bellow 30%. This comncludes the code for the sentence "Since 2015, the arrest rate hasn’t topped 30 percent in any year."
+
+##next I will be looking at And while most cities saw their arrest rates drop gradually, Baltimore’s decline was sudden — plummeting 15 percentage points in 2015
+
+```{r}
+baltimore_homicide_data <- homicide_data %>% 
+  filter(city == "Baltimore")
+fourteen_baltimore_homicide_data <- baltimore_homicide_data %>% 
+  filter(reported_date < 20149999) %>% 
+  filter(reported_date > 20139999  )
+
+##this code above gives me only cases from 2017
+
+fourteen_successful_arrests <- fourteen_baltimore_homicide_data %>% 
+  filter(str_detect(disposition ,'by arrest')) 
+
+
+fourteen_successful_arrests
+```
+
+##data shows that in 2014, the arrest rate was 40.7% (86/211). As observed earlier, the arrest rate in 2015 was just 25.4%, an exact dropoff of 15 percent. 
+
+

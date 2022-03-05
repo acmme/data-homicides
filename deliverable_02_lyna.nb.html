@@ -264,9 +264,14 @@ i Specify the column types or set `show_col_types = FALSE` to quiet this message
 <p>We didn’t like how the way the dates were formatted, so we just changed it to year-month-date.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaG9taWNpZGVfZGF0YSRyZXBvcnRlZF9kYXRlIDwtIHltZChob21pY2lkZV9kYXRhJHJlcG9ydGVkX2RhdGUpXG4gIFxuYGBgIn0= -->
-<pre class="r"><code>homicide_data$reported_date &lt;- ymd(homicide_data$reported_date)
-  </code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaG9taWNpZGVfZGF0YSRyZXBvcnRlZF9kYXRlIDwtIHltZChob21pY2lkZV9kYXRhJHJlcG9ydGVkX2RhdGUpXG5gYGAifQ== -->
+<pre class="r"><code>homicide_data$reported_date &lt;- ymd(homicide_data$reported_date)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiV2FybmluZzogIDIgZmFpbGVkIHRvIHBhcnNlLlxuIn0= -->
+<pre><code>Warning:  2 failed to parse.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuICBcbmBgYCJ9 -->
+<pre class="r"><code>  </code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -540,7 +545,7 @@ view(delta_homicide_arrests_per_city_per_year)
     count = n()
   )</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MywibmNvbCI6Miwic3VtbWFyeSI6eyJBIHRpYmJsZSI6WyIzIHggMiJdfX0sInJkZiI6Ikg0c0lBQUFBQUFBQUJsMVJRVTdETUJEY3VHbFFJZ0dWT1BiU0R6UlNXL0VDZUFEaTFGdGtYSk5ZQkR1S0hjcVJqOU95ZHJ3b1NpVEg2N0ZuWmoxK2ZUNGVpbU1CQUF0SUV3YUxKWmFRUGIzczlvOTdnSlRoS29FVWNqOS80NmtITER5NEdpbGg0MDdMbWp2MUpUZUNXMmtKN1l4VkV4UWd2K0tIODIzZ0FtdzhodU13TTFwcS9oa0lxMkEyZ211Qll0SldaK1dhaWd3cjBYQmRTK0lKTTJnM0U4dDdjeTVKMER1ekgveGhJNzl6VjlGeVM2NEVGaWZ1ZVBuZUl4OVhseG5seG5ST0dZMGs1blBKUENGc2oyTXFsUFF6NEg3UXZxdlRWalNEL3RqdUpseUluU1l4SjZyWmFNK3VVU3FMVXFrVWpZbDFKbld0OUg4aUxYK1RMVDBJSmhHQ0tMdGVZVTd4aG9qYTBobkg2VndoVEV0SXVETmMvZ0N1cDhIZ0p3SUFBQT09In0= -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MywibmNvbCI6Miwic3VtbWFyeSI6eyJBIHRpYmJsZSI6WyIzIHggMiJdfX0sInJkZiI6Ikg0c0lBQUFBQUFBQUJsMVIwVzZESUJTOVV1dWl5UmFUUGU2bFAxQ1QydlFMdWc5WTl0UTN3eWhUTWdkR2NOM2pmbnp0TGdpTHdRUzVIRGpuWEE2dno2ZDljU29BWUFWcFFtQzF4aEt5NDh1dVB0UUFLY0ZWQWlua2R2N0dVNDlZV0xDY0tXN2pRZktXR3ZIRk40eHFyZ002S0MwV0tFQit3dy9uZThjRjJGZ014ejR5V2t2NjZRaWxNNXZCSjRaaVhEY1hZYm9tR0Rhc283TGxnY2ZVSkUwa2xvL3FVZ1ZCNjB4KzhJZU4vTWF1cktjNnVBYXdPRk5EcS9jUitiaTZScFE3TlJpaEpKS0l6U1d6QkxjOWo2VlFNa1pBT1VuYjFYbkx1a2wrYk92ZGdneSsxY1FIRldveSs1T2IxOHE4VnNwWnAzeWRjZGtLK1I5SlQ5OTRIMTRFbzNCSlZNTW9NQ2gvUlVSMVpaU2g0VnpCVkI4UWQybTQvZ0VHYzVDZktBSUFBQT09In0= -->
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["cities_with_negative_change"],"name":[1],"type":["chr"],"align":["left"]},{"label":["count"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"negative cases","2":"32"},{"1":"positive cases","2":"9"},{"1":"NA","2":"51"}],"options":{"columns":{"min":{},"max":[10],"total":[2]},"rows":{"min":[10],"max":[10],"total":[3]},"pages":{}}}
