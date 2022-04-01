@@ -387,8 +387,49 @@ fourteen_successful_arrests <- fourteen_baltimore_homicide_data %>%
 fourteen_successful_arrests
 ```
 
-data shows that in 2014, the arrest rate was 40.7% (86/211). As observed earlier, the arrest rate in 2015 was just 25.4%, an exact dropoff of 15 percent. 
 
+##data shows that in 2014, the arrest rate was 40.7% (86/211). As observed earlier, the arrest rate in 2015 was just 25.4%, an exact dropoff of 15 percent. This drop affirms the point made that Baltimore's drop was indeed sudden, dropping a staggerting 15 percent in the year following the death of Freddie Gray.
+
+
+## the largest single-year drop for any city already solving less than half its homicides.
+```{r}
+fourteen_all_cities <- homicide_data %>% 
+  group_by(city) %>% 
+  filter(reported_date < 20149999) %>% 
+  filter(reported_date > 20139999  ) %>% 
+  summarise(total=n())  
+## this code gives us total amount of cases each city had in 2014
+
+fourteen_all_arrest <- homicide_data %>% 
+  group_by(city) %>% 
+  filter(reported_date < 20149999) %>% 
+  filter(reported_date > 20139999  ) %>% 
+  filter(str_detect(disposition ,'by arrest')) %>% 
+  summarize(total=n())
+
+```
+
+## This code provides us with two datasets, one showing the total amount of cases that a city handled in 2014 and the next showing how many of the cases ended in arrest.  These data sets can be used to calculate the arrets rate for each individual city. The code can be repeated for the year 2015 in order to calculate the arrest rates in that year. Doing so will show that indeed Baltimore had the largest single year drop of any city solving less than half its homicides. 
+
+
+```{r}
+fifteen_all_cities <- homicide_data %>% 
+  group_by(city) %>% 
+  filter(reported_date < 20159999) %>% 
+  filter(reported_date > 20149999  ) %>% 
+  summarise(total=n())  
+## this code gives us total amount of cases each city had in 2014
+
+fifteen_all_arrest <- homicide_data %>% 
+  group_by(city) %>% 
+  filter(reported_date < 20159999) %>% 
+  filter(reported_date > 20149999  ) %>% 
+  filter(str_detect(disposition ,'by arrest')) %>% 
+  summarize(total=n())
+
+```
+
+## While a bit of math is needed, the provided dataframes give us the number of cases and cases ending in arrest for both years, which allows us to calculate the arrest rates of each individual city. Once they are all calculated, you will find Baltimore had the lartgest drop of any city solving under 50% of homicide cases.
 
 
 
