@@ -1,0 +1,114 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+For most of the decade before 2015, Baltimore’s annual homicide arrest rate hovered at about 40 percent. Since 2015, the arrest rate hasn’t topped 30 percent in any year. And while most cities saw their arrest rates drop gradually, Baltimore’s decline was sudden — plummeting 15 percentage points in 2015, after Gray’s death, the largest single-year drop for any city already solving less than half its homicides.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+options(scipen=999)
+library(tidyverse)
+library(janitor)
+library(lubridate)
+
+```
+
+```{r}
+library(readr)
+homicide_data <- read_csv("homicide-data.csv")
+homicide_data$reported_date <- ymd(homicide_data$reported_date)
+homicide_data$reported_date <- year(homicide_data$reported_date)
+
+```
+
+```{r}
+homicide_data_baltimore_pre2015 <- homicide_data %>% 
+  filter(city == "Baltimore" & reported_date < "2015")
+
+homicide_data_baltimore_post2015 <- homicide_data %>% 
+  filter(city == "Baltimore" & reported_date >= "2015")
+
+homicide_arrests_per_year_pre2015 <- homicide_data_baltimore_pre2015 %>% 
+  group_by(city, reported_date, disposition) %>% 
+  summarize( 
+    amount_of_cases_per_disposition = n() 
+  ) %>% 
+  pivot_wider(names_from=disposition, values_from=amount_of_cases_per_disposition) %>% 
+  rename(Closed_by_arrest = "Closed by arrest", Closed_without_arrest = "Closed without arrest", Open_no_arrest = "Open/No arrest")
+
+homicide_arrests_per_year_pre2015 <- homicide_arrests_per_year_pre2015 %>% 
+  mutate(
+    total_amount_of_cases = sum(c(Closed_by_arrest, Closed_without_arrest, Open_no_arrest), na.rm=TRUE),
+    percent_of_arrests = Closed_by_arrest / total_amount_of_cases * 100
+  )
+
+homicide_arrests_per_year_post2015 <- homicide_data_baltimore_post2015 %>% 
+  group_by(city, reported_date, disposition) %>% 
+  summarize( 
+    amount_of_cases_per_disposition = n() 
+  ) %>% 
+  pivot_wider(names_from=disposition, values_from=amount_of_cases_per_disposition) %>% 
+  rename(Closed_by_arrest = "Closed by arrest", Closed_without_arrest = "Closed without arrest", Open_no_arrest = "Open/No arrest")
+
+homicide_arrests_per_year_post2015 <- homicide_arrests_per_year_post2015 %>% 
+  mutate(
+    total_amount_of_cases = sum(c(Closed_by_arrest, Closed_without_arrest, Open_no_arrest), na.rm=TRUE),
+    percent_of_arrests = Closed_by_arrest / total_amount_of_cases * 100
+  )
+
+mean(homicide_arrests_per_year_pre2015$percent_of_arrests)
+max(homicide_arrests_per_year_post2015$percent_of_arrests)
+```
+
+```{r}
+homicide_data_baltimore_plummet <- homicide_data %>% 
+  filter(city == "Baltimore" & reported_date <= "2015" & reported_date >= "2014")
+
+homicide_arrests_per_year_2014_2015 <- homicide_data_baltimore_plummet %>% 
+  group_by(city, reported_date, disposition) %>% 
+  summarize( 
+    amount_of_cases_per_disposition = n() 
+  ) %>% 
+  pivot_wider(names_from=disposition, values_from=amount_of_cases_per_disposition) %>% 
+  rename(Closed_by_arrest = "Closed by arrest", Closed_without_arrest = "Closed without arrest", Open_no_arrest = "Open/No arrest")
+
+homicide_arrests_per_year_2014_2015 <- homicide_arrests_per_year_2014_2015 %>% 
+  mutate(
+    total_amount_of_cases = sum(c(Closed_by_arrest, Closed_without_arrest, Open_no_arrest), na.rm=TRUE),
+    percent_of_arrests = Closed_by_arrest / total_amount_of_cases * 100
+  )
+
+delta_homicide_arrests_per_year_2014_2015 <- homicide_arrests_per_year_2014_2015 %>% 
+    group_by(city) %>% 
+  arrange(city, reported_date, .by_group = TRUE) %>%
+  mutate(delta = percent_of_arrests - lag(percent_of_arrests))
+
+```
+
+```{r}
+homicide_arrests_per_city_per_year <- homicide_data %>% 
+  group_by(city, reported_date, disposition) %>% 
+  summarize( 
+    amount_of_cases_per_disposition = n() 
+  ) %>% 
+  pivot_wider(names_from=disposition, values_from=amount_of_cases_per_disposition) %>% 
+  rename(Closed_by_arrest = "Closed by arrest", Closed_without_arrest = "Closed without arrest", Open_no_arrest = "Open/No arrest")
+
+homicide_arrests_per_city_per_year <- homicide_arrests_per_city_per_year %>% 
+  mutate(
+    total_amount_of_cases = sum(c(Closed_by_arrest, Closed_without_arrest, Open_no_arrest), na.rm=TRUE),
+    percent_of_arrests = Closed_by_arrest / total_amount_of_cases * 100
+  )
+
+bottom50_homicide_arrests_per_city_per_year <- homicide_arrests_per_city_per_year %>% 
+  filter(percent_of_arrests < "50") %>% 
+  arrange(city, reported_date)
+
+bottom50_homicide_arrests_per_city_per_year <- bottom50_homicide_arrests_per_city_per_year %>%
+  filter(!row_number() %in% c(1, 72, 85, 86, 87, 108, ))
+
+```

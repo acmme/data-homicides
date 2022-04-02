@@ -24,6 +24,7 @@ library(readr)
 homicide_dataset <- read_csv("homicide-data.csv")
 ```
 ```{r}
+homicide_dataset$reported_date <- ymd(homicide_dataset$reported_date)
 homicide_dataset$reported_date <- year(homicide_dataset$reported_date)
    
 ```
@@ -31,8 +32,10 @@ We cleaned up the reported_date column and got rid of the day and month
 Then we filtered by years 2014 and 2017 to see the "recent years" of the dataset. We focus on the cities and those years and the amount of homicides in each of those cities. Then we aggange by each given year for every city and count the decrease or increase in homicides. 
 
 ```{r}
-homicide_dataset_2014_to_2017 <- homicide_dataset  %>%
-filter (reported_date == "2014" | reported_date == "2017") %>%
+homicide_dataset_2014_to_2017 <- homicide_dataset %>% 
+  filter (reported_date == "2014" | reported_date == "2017")
+
+homicide_dataset_2014_to_2017 <- homicide_dataset_2014_to_2017 %>% 
 group_by (city, reported_date)%>%
  summarize(count=n())%>% 
 group_by(city) %>% 
